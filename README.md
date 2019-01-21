@@ -7,8 +7,8 @@
 [![License](https://img.shields.io/packagist/l/laracrafts/laravel-geo-routes.svg?style=flat-square)][10]
 > GeoLocation Restricted Routes For Laravel
 ## Requirements
-- Laravel >= 5.5
-- PHP >= 7.1
+- Laravel >= 5.0
+- PHP >= 7.0
 
 ## Installation
 
@@ -26,10 +26,13 @@ php artisan vendor:publish --provider="LaraCrafts\GeoRoutes\GeoRoutesServiceProv
 
 ## Usage
 
+Geo Routes
+-
+
 To get started real quick, the `allowFrom` and `denyFrom` methods allow you to restrict access to routes depending on *GeoLocations*
 
 
-- Allow access from specific regions
+ - Allow access from specific regions
 
 ```php
 Route::get('/home', 'FooController@bar')->allowFrom('us', 'gb');
@@ -68,7 +71,35 @@ below. Instead those versions have to use the `GeoRoute` facade.
 GeoRoute::get('/home', 'FooController@bar')->denyFrom('ca', 'de', 'fr');
 ```
 
-Using the GeoRoute facade works the exact same way as using macros!
+> ***Note:*** Using the GeoRoute facade works the exact same way as using macros!
+
+Geo Groups
+-
+Geo-Groups is a very useful feature that will let you define a a *geo contraint* for a route group, you can easily make a new *GeoGroup* by replacing the native `group` method with the `GeoGroup` method.
+```php
+Route::GeoGroup(['prefix' => 'english'], function() {
+    Route::get('/forums', 'FooController@index');
+    Route::get('/new', 'BarController@save');
+});
+```
+To apply a contraint on a *GeoGroup*, you can use the `allowFrom` and the `denyFrom` methods:
+
+```php
+//Allow access only from Spain and Mexico
+Route::GeoGroup(['prefix' => 'spanish'], function() {
+    Route::get('/forums', 'FooController@index');
+    Route::get('/new', 'BarController@save');
+})->allowFrom('es', 'mx');
+
+//Deny access only from Germany and Italy
+Route::GeoGroup(['prefix' => 'english'], function() {
+    Route::get('/forums', 'FooController@index');
+    Route::get('/new', 'BarController@save');
+})->denyFrom('de', 'it');
+```
+
+*Callbacks* are also applicable for the *GeoGroup*s. 
+The next section will be more focused on including callbacks with Geo Routes, but you don't have to worry because everything described below will also work with a *GeoGroup*.
 
 ## Callbacks
 
@@ -103,6 +134,15 @@ Thanks to this callback, you'll be able to redirect unauthorized visitors to a r
 Route::get('/forums', 'FooController@bar')
 ->allowFrom('de', 'ca')
 ->orRedirectTo('myRoute');
+```
+
+**An example with a *GeoGroup*:**
+```php
+Route::GeoGroup(['prefix' => 'en'], function() {
+    Route::get('/forums', 'FooController@bar');
+    Route::get('/blog', 'BarController@baz');
+})->allowFrom('us', 'gb')
+  ->orRedirectTo('myRoute');
 ```
 
 - ### Custom callbacks
