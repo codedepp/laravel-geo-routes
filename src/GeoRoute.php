@@ -134,7 +134,7 @@ class GeoRoute
         }
 
         $action = $this->route->getAction();
-        $action['middleware'][] = (string)$this;
+        $action['middleware'] = (string) $this;
 
         $this->applied = true;
         $this->route->setAction($action);

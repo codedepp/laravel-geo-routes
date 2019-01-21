@@ -2,7 +2,9 @@
 
 namespace LaraCrafts\GeoRoutes;
 
+use Closure;
 use Illuminate\Routing\Route;
+use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use LaraCrafts\GeoRoutes\Http\Middleware\GeoRoutesMiddleware;
 
@@ -21,6 +23,10 @@ class GeoRoutesServiceProvider extends ServiceProvider
         if (version_compare($this->app->version(), '5.5.0', '>=')) {
             $this->registerMacros();
         }
+
+        Router::macro('GeoGroup', function (array $attributes, Closure $callback) {
+            return new GeoGroup($attributes, $callback);
+        });
     }
 
     /**
